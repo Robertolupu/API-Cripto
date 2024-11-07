@@ -1,6 +1,6 @@
 from flask import Flask
 from models.models import db, ws 
-#from routes.routes import *
+from routes.routes import *
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')    
@@ -12,6 +12,8 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return "Welcome to Roberto's CryptoCurrency API!"
+
+graphics_routes(app)
 
 if __name__ == '__main__':
     logging.info("Starting api...")

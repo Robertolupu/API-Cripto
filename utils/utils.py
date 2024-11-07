@@ -1,6 +1,8 @@
 from models.models import db
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+import io
 
 
 ERROR_PARAMETER='Error, some of the parameters given are not right.'
@@ -13,7 +15,7 @@ def get_data_for_graphic(crypto, columna, rango='day', dates=[None, None]):
             -(Opcional)rango: Calcula el rango de tiempos según se seleccione 'hour', 'day', 'week', o 'month' donde el final del rango es ahora.
             -(Opcional)dates: Rango de fechas a calcular la grafica.
     """
-    if crypto not in db:
+    if crypto not in db.list_collection_names():
         raise Exception(ERROR_PARAMETER)
     
     if columna not in ['v', 'q', 'V', 'Q']:
@@ -56,7 +58,7 @@ def get_data_for_graphic(crypto, columna, rango='day', dates=[None, None]):
     for doc in res_list:
         #if '_id' in doc:
         #    del doc['_id']
-        if columna in doc:
+        if columna in doc and 'time' in doc:
             processed_data.append({
                 'value': doc[columna],
                 'time': doc['time'].isoformat()
@@ -73,6 +75,7 @@ def get_data_for_graphic(crypto, columna, rango='day', dates=[None, None]):
     plt.title(f'{columna} Data Over Time')
     plt.xticks(rotation=45)
     plt.grid(True)
+    plt.gca().yaxis.set_major_locator(MaxNLocator(nbins=5))
 
     buf = io.BytesIO()
     plt.tight_layout()

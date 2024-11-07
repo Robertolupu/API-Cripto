@@ -7,7 +7,7 @@ def get_graphic():
     buf = get_data_for_graphic(
         request.args.get('crypto'),
         request.args.get('column'),
-        request.args.get('day') if request.args.get('day') is not None else 'day',
+        request.args.get('rango') if request.args.get('rango') is not None else 'day',
         [request.args.get('ini_time'), request.args.get('fin_time')]
     )
 

@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import io
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')  
 
 
 ERROR_PARAMETER='Error, some of the parameters given are not right.'
@@ -20,6 +23,8 @@ def get_data_for_graphic(crypto, columna, rango='day', dates=[None, None]):
     
     if columna not in ['v', 'q', 'V', 'Q']:
         raise Exception(ERROR_PARAMETER)
+    
+    logging.info(f"{rango}, {dates}")
     
     if dates == [None, None]:
 
@@ -46,13 +51,9 @@ def get_data_for_graphic(crypto, columna, rango='day', dates=[None, None]):
 
     dates = [date.isoformat() for date in dates]
     dates.sort()
-    res = db[crypto].find({
-                    #'id': id
-                    #'$and': [
-                    #    #{f'{sensor}.time': {'$gte': dates[0], '$lte': dates[1]}}
-                    #    {f'{sensor}.time': {'$gte': dates[1]}}
-                    #]
-                })
+    start_date = datetime.fromisoformat(dates[0]) if isinstance(dates[0], str) else dates[0]
+    end_date = datetime.fromisoformat(dates[1]) if isinstance(dates[1], str) else dates[1]
+    res = db[crypto].find({'time': {'$gte': start_date, '$lte': end_date}})
     res_list = list(res)
     processed_data = []
     for doc in res_list:
@@ -69,6 +70,7 @@ def get_data_for_graphic(crypto, columna, rango='day', dates=[None, None]):
 
     plt.figure(figsize=(10, 5))
     plt.plot(times, values, marker='o', linestyle='-', color='b')
+    plt.xlim(start_date, end_date)
 
     plt.xlabel('Time')
     plt.ylabel(columna)

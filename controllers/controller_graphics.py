@@ -1,8 +1,13 @@
-from utils.utils import get_data_for_graphic
+from utils.utils import get_data_for_graphic, checktoken
 from flask import jsonify, send_file, request
 
 
 def get_graphic():
+
+    response = checktoken(request.headers.get('token'))
+
+    if not response['valid']:
+        return jsonify(response), 401
 
     buf = get_data_for_graphic(
         request.args.get('crypto'),

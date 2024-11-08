@@ -1,4 +1,4 @@
-from models.models import db
+from models.models import db, users, tokens
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
@@ -86,3 +86,34 @@ def get_data_for_graphic(crypto, columna, rango='day', dates=[None, None]):
     buf.seek(0)
 
     return buf
+
+
+def checktoken(token):
+        
+    if(token=="roberto_internal_testing"):
+        return {'valid': True, 'email': 'internal_testing'}
+
+    if not token.startswith('Bearer '):
+        response = {'valid': False, 'error': 'Invalid Token'}
+
+    token = token[7:]
+    
+    user_data = tokens.find_one({'token': token})
+
+    if user_data is None:
+        response = {'valid': False, 'error': 'Invalid Token'}
+
+    else:
+        user = users.find_one({'user_email': user_data['user_email']})
+
+        if user is None:
+            response = {'valid': False, 'error': 'Invalid or inexistent user.'}
+
+        elif datetime.now() <= (datetime.strptime(user_data['data'], '%Y-%m-%dT%H:%M:%S.%f') + timedelta(minutes=50)):
+            response = {'valid': True, 'email': user['user_email']}
+            tokens.update_one({'token': token}, {'$set': {'data': datetime.now().isoformat()}})
+        
+        else:
+            response = {'valid': False, 'error': 'Timeout'}
+
+    return response

@@ -14,6 +14,8 @@ def index():
     return "Welcome to Roberto's CryptoCurrency API!"
 
 graphics_routes(app)
+users_routes(app)
+tokens_routes(app)
 
 if __name__ == '__main__':
     logging.info("Starting api...")

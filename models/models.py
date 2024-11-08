@@ -16,10 +16,9 @@ def on_message(ws, message):
 
     message = json.loads(message)
 
-    #logging.info(json.loads(message))
     if 'data' in message:
 
-        message['data']['k']['time'] = datetime.now()
+        message['data']['k']['time'] = datetime.now()## tiempo es message[['E']MIRAR
         db[message['data']['s']].insert_one(message['data']['k'])
 
 
@@ -50,6 +49,8 @@ MONGO_URI = f'mongodb://{user}:{password}@mongo:27017/?authSource=admin'
 
 client = MongoClient(MONGO_URI)
 db = client["CryptoCurrency"]
+users = db['users']
+tokens = db['tokens']
 
 
 

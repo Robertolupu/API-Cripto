@@ -2,32 +2,37 @@ from flask import request, jsonify
 from models.models import users, tokens
 import jwt
 from datetime import timedelta, datetime
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')    
 
 
 def login():
+    try:
+        data = request.get_json()
+        user_email = data['user_email']
+        user_password = data['user_password']
+        doc = users.find_one({'user_email': user_email})
+        
+        if doc and doc['user_password'] == user_password:##MANAGE ENCRIPTED PASSWORD
+        
+            token = jwt.encode({'username': user_email}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
+            response = {'valid': True, 'user_given_name': doc['user_given_name'], 'token': token, 'user_email':user_email}
+            entry = {
+                "valid": True,
+                "token": token,
+                "data": datetime.now().isoformat(),
+                "user_email": user_email
+            }
+            res = tokens.insert_one(entry)
+            return jsonify(response), 200
+        
+        else:
 
-    data = request.get_json()
-    user_email = data['user_email']
-    user_password = data['user_password']
-    doc = users.find_one({'user_email': user_email})
-    
-    if doc and doc['user_password'] == user_password:##MANAGE ENCRIPTED PASSWORD
-    
-        token = jwt.encode({'username': user_email}, datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), algorithm='HS256')
-        response = {'valid': True, 'user_given_name': doc['user_given_name'], 'token': token, 'user_email':user_email}
-        entry = {
-            "vallid": True,
-            "token": token,
-            "data": datetime.now().isoformat(),
-            "user_email": user_email
-        }
-        res = tokens.insert_one(entry)
-        return jsonify(response), 200
-    
-    else:
-
-        response = {'valid': False, 'error': 'Email or password incorrect.'}
-        return jsonify(response), 400
+            response = {'valid': False, 'error': 'Email or password incorrect.'}
+            return jsonify(response), 400
+    except Exception as e:
+        log
 
 
 

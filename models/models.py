@@ -10,7 +10,7 @@ from datetime import datetime
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')    
 
-
+ERROR_PARAMETER='Error, some of the parameters given are not right.'
 
 def on_message(ws, message):
 

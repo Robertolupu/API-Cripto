@@ -13,7 +13,7 @@ app = Flask(__name__)
 def index():
     return "Welcome to Roberto's CryptoCurrency API!"
 
-graphics_routes(app)
+cryptos_routes(app)
 users_routes(app)
 tokens_routes(app)
 

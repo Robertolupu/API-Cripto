@@ -1,4 +1,4 @@
-from models.models import db, users, tokens
+from models.models import db, users, tokens, ERROR_PARAMETER
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
@@ -8,7 +8,6 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')  
 
 
-ERROR_PARAMETER='Error, some of the parameters given are not right.'
 
 def get_data_for_graphic(crypto, columna, rango='day', dates=[None, None]):
     """
@@ -49,10 +48,9 @@ def get_data_for_graphic(crypto, columna, rango='day', dates=[None, None]):
             else:
                 dates[1] = datetime(dates[0].year, dates[0].month - 1, dates[0].day)
 
-    dates = [date.isoformat() for date in dates]
     dates.sort()
-    start_date = datetime.fromisoformat(dates[0]) if isinstance(dates[0], str) else dates[0]
-    end_date = datetime.fromisoformat(dates[1]) if isinstance(dates[1], str) else dates[1]
+    start_date = dates[0]
+    end_date = dates[1]
     res = db[crypto].find({'time': {'$gte': start_date, '$lte': end_date}})
     res_list = list(res)
     processed_data = []
